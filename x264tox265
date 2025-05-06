@@ -1,0 +1,21 @@
+#!/bin/bash
+# Applies for all files in a directory to convert to an x265 .mp4 file, with standard compression.
+# Experimentally has reduced x264 file sizes down to 7-25% of the original size.
+# It's important to ensure the directory contains ONLY the files you'd like to convert. You must be CD'ed into the directory with the videos.
+
+mkdir -p x265 # subdir made where all the videos will be converted into. gets skipped in next lines of code so don't worry
+
+for file in *.*; do
+  # Skip the output directory
+  if [[ "$file" == "x265"* ]]; then
+    continue
+  fi
+
+  filename=$(basename "$file")
+  filename_tr="${filename%.*}"
+
+  ffmpeg -i "$file" -vcodec libx265 \
+    -crf 27 \  # 0 lossless, 25-28 standard, anything above 30 terrible
+    "x265/${filename_tr}_265.mp4"
+# rm "$file" -- can add if desired to delete unconverted file.
+done
